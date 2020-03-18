@@ -1,0 +1,21 @@
+#editor-form {
+	height: 400px; 
+	width: 50%;
+	display:inline-block;
+	position:relative;
+}
+
+#editor-tabs {
+	display: flex;
+	/*grid-template-columns: repeat(4, 1fr);*/
+}
+
+#editor-tabs button{
+	height: 40%;
+	width: 40%;
+	background-color: grey;
+}
+
+#editor-tabs #tab-active {
+	background-color: white;
+}
