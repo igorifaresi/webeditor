@@ -13,17 +13,32 @@
     }
 </style>
 <link rel="stylesheet" href="styles.css">
+<style type="text/css">  
+    body { margin:0; }  
+</style>
 </head>
 <body>
 
-<div id="editor-form">
-    <div id="editor-tabs"></div>
-    <div id="editor">foo = function(items) {
+<div id="top-bar">
+    <button>Import</button>
+    <button>Import</button>
+    <button>Import</button>
+    <button>Import</button>
+</div>
+
+<div style="display: flex; height: 100%; width: 100%;">
+    <div id="lateral-bar">
+        <button>Tomate</button>
+        <button>Tomate</button>
+    </div>
+    <div id="editor-form">
+        <div id="editor-tabs"></div>
+        <div id="editor">foo = function(items)
     x = "All this is syntax highlighted"
     return x
 end
-</div>
-
+        </div>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>

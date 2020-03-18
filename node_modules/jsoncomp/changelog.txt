@@ -1,0 +1,16 @@
+1.6.1
+    Make improvement in _numberToKeys for objects with a lot of different keys.
+1.6.0
+    Checking in Fiddler have been found a problem with a simple Gzip version, if Gzipped when the data is transported
+    via POST it's url encoded and it makes grow the final size being transported, to fix it a Base64 encode has been added.
+1.5.0
+    Change the compression library from lz-string to gzip.js to make it simpler to be implemented in server side
+    Added the PHP class to inflate the compressed data in PHP server.
+    Replace the static example demo with a dynamic demo to be used in a PHP server.
+1.0.0
+    Change the API name of getJSONFromLZWString and getLZWStringFromJSON to pack and unpack that are more readable.
+0.3.0
+    Add new methods to allow the user to compress JSON objects using LZW even if the objects are not been compressed using
+     JSONC.compress.
+0.0.1
+    First Commit

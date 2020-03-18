@@ -33,11 +33,11 @@ addBuffer("baz", "/actors/baz.lua", "c");
 
 var socket = io('http://localhost:3000/');
 socket.emit('save', {
-    "path" : "/tmp/batatinha.json",
+    "path" : "/tmp/batatinha.lzw",
     "data" : "batatinha batatosa fagundes"
 });
 
-socket.emit('load', "/tmp/batatinha.json");
+socket.emit('load', "/tmp/batatinha.lzw");
 
 socket.on('load_res', (data) => {
     alert("i receive "+data);
