@@ -23,11 +23,27 @@ editor.setOptions({
 var buffers = new Array();
 var actualBuffer = 0;
 
+//tests
+
 addBuffer("foo", "/actors/foo.lua", "a");
 addBuffer("bar", "/actors/bar.lua", "b");
 addBuffer("baz", "/actors/baz.lua", "c");
 
 //editor.resize();
+
+var socket = io('http://localhost:3000/');
+socket.emit('save', {
+    "path" : "/tmp/batatinha.json",
+    "data" : "batatinha batatosa fagundes"
+});
+
+socket.emit('load', "/tmp/batatinha.json");
+
+socket.on('load_res', (data) => {
+    alert("i receive "+data);
+});
+
+//end tests
 
 function addBuffer(_name, _out, _content) {
     var button = document.createElement("BUTTON");
