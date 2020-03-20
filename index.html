@@ -26,10 +26,10 @@
     <button>Import</button>
 </div>
 
-<div style="display: flex; height: 100%; width: 100%;">
+<div id="main-area" style="display: flex; height: 100%; width: 100%;">
     <div id="lateral-bar">
-        <button>Tomate</button>
-        <button>Tomate</button>
+        <button onclick="onLateralTabClick(0)">Actors</button>
+        <button onclick="onLateralTabClick(1)">Project</button>
     </div>
     <div id="editor-form">
         <div id="editor-tabs"></div>
@@ -39,6 +39,7 @@
 end
         </div>
     </div>
+    <div id="actors"></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
