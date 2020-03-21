@@ -23,10 +23,10 @@ let actualPage = 0;
 
 //tests
 
-addActor("foo", "a");
-addActor("bar", "b");
-addActor("baz", "c");
-addActor("batatinha", templateFile);
+addActor("foo");
+addActor("bar");
+addActor("baz");
+addActor("batatinha");
 
 
 var socket = io('http://localhost:3000/');
@@ -74,67 +74,70 @@ function newActorHTML(actor, n) {
     button.innerHTML = '<span>'+actor.name+'</span><button onclick="editActor('+n+
     ')">Edit</button> <button onclick="eraseActor('+n+')">Erase</button>';
 
+    if (!actor.editing) {
+        tab.setAttribute("id", "tab-inactive");
+    } else {
+        tab.setAttribute("id", "tab-active");
+    }
+
     return { "tab" : tab.outerHTML, "button" : button.outerHTML };
 }
 
-function addActor(name, content) {
-    let tab = document.createElement("BUTTON");
-    tab.setAttribute("onclick", "onEditorTabClick("+actors.length+")");
-    tab.innerHTML = name;
-    let button = document.createElement("div");
-    button.setAttribute("class", "item-field");
-    button.innerHTML = '<span>'+name+'</span><button onclick="editActor('+actors.length+
-    ')">Edit</button> <button onclick="eraseActor('+actors.length+')">Erase</button>';
-    actors[actors.length] = {"name" : name, "tab" : tab, "button" : button,
-                             "content" : content, "editing" : true};
-
-    document.getElementById("editor-tabs").innerHTML += tab.outerHTML;
-    document.getElementById("actors").innerHTML += button.outerHTML;
+function addActor(name) {
+    actors[actors.length] = {
+        "name"    : name,
+        "content" : "-- actor: "+name+"\n"+templateFile,
+        "editing" : false,
+    };
+    let tmp = newActorHTML(actors[actors.length - 1], actors.length - 1);
+    document.getElementById("editor-tabs").innerHTML += tmp.tab;
+    document.getElementById("actors").innerHTML += tmp.button;
 }
 
 function editActor(id) {
+    actors[actualEditingActor].editing = false;
     actors[id].editing = true;
     onEditorTabClick(id);
-    //alert("edit actor: "+id);
 }
 
 //giving logic interface error
 function eraseActor(id) {
     actors.splice(id, 1);
     let len = actors.length;
+    let deleteEditing = true;
     for (let i = 0; i < len; i++) {
-        actors[i].tab.setAttribute("onclick", "onEditorTabClick("+i+")");
-        actors[i].button.innerHTML = '<span>'+actors[i].name+'</span><button onclick="editActor('+i+
-        ')">Edit</button> <button onclick="eraseActor('+i+')">Erase</button>';
+        if (actors[i].editing) {
+            actualEditingActor = i;
+            deleteEditing = false;
+            break;
+        }
+    }
+    if (deleteEditing && actors.length > 0) {
+        actualEditingActor = 0;
+        actors[0].editing = true;
+        editor.setValue(actors[0].content, -1);
     }
     let tabs = document.getElementById("editor-tabs");
     let actorsList = document.getElementById("actors");
     tabs.innerHTML = "";
     actorsList.innerHTML = "";
     for (let i = 0; i < len; i++) {
-        tabs.innerHTML += actors[i].tab.outerHTML;
-        actorsList.innerHTML += actors[i].button.outerHTML;
-    }
-    for (let i = 0; i < len; i++) {
-        if (actors[i].editing) {
-            actualEditingActor = i;
-            break;
-        }
+        let tmp = newActorHTML(actors[i], i);
+        tabs.innerHTML += tmp.tab;
+        actorsList.innerHTML += tmp.button;
     }
 }
 
 function onEditorTabClick(id) {
     actors[actualEditingActor].content = editor.getValue();
 
-    actors[actualEditingActor].tab.setAttribute("id", "tab-inactive");
-    actors[id].tab.setAttribute("id", "tab-active");
+    actors[actualEditingActor].editing = false;
+    actors[id].editing = true;
     let tabs = document.getElementById("editor-tabs");
     tabs.innerHTML = "";
     let len = actors.length;
     for (let i = 0; i < len; i++) {
-        if (actors[i].editing) {
-            tabs.innerHTML += actors[i].tab.outerHTML;
-        }
+        tabs.innerHTML += newActorHTML(actors[i], i).tab;
     }
 
     editor.setValue(actors[id].content, -1);
