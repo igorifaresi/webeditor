@@ -12,7 +12,7 @@ html, body{
 	overflow-x: hidden;
 }
 
-#editor-form {
+.form {
 	height: 75%; 
 	width: 50%;
 	display:inline-block;
@@ -32,17 +32,36 @@ html, body{
 	flex-grow: 2;
 }
 
-#actor-field {
+.item-field-major {
 	display: flex;
 	/*min-width: 100%;*/
 	flex-direction: row;
 	/*flex-grow: 2;*/
 	/*width: auto;
 	display: block;*/
+	margin-bottom: 3px;
+	background-color: white;
+	-webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
+  	-moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
+  	box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
+}
+
+.item-field-major span {
+	flex-grow: 2;
+}
+
+.item-field {
+	display: flex;
+	/*min-width: 100%;*/
+	flex-direction: row;
+	/*flex-grow: 2;*/
+	/*width: auto;
+	display: block;*/
+	margin-bottom: 3px;
 	background-color: white;
 }
 
-#actor-field span {
+.item-field span {
 	flex-grow: 2;
 }
 
@@ -55,6 +74,10 @@ html, body{
 	height: 40%;
 	width: 40%;
 	background-color: grey;
+}
+
+#editor-tabs #tab-active {
+	background-color: white;
 }
 
 #top-bar {
@@ -91,8 +114,4 @@ html, body{
 #lateral-bar button{
 	width: 100%;
 	height: 20%;
-}
-
-#editor-tabs #tab-active {
-	background-color: white;
 }

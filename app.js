@@ -16,8 +16,10 @@ editor.setOptions({
     fontSize: "10pt"
 });
 
+var pages = Array();
 var actors = new Array();
-var actualEditingActor = 0;
+let actualEditingActor = 0;
+let actualPage = 0;
 
 //tests
 
@@ -40,22 +42,47 @@ socket.on('load_res', (data) => {
 });
 
 //end tests
-var pages = Array();
-var actualPage = 0;
 
 pages[1] = `
 <div id="lateral-bar">
     <button onclick="onLateralTabClick(0)">Actors</button>
     <button onclick="onLateralTabClick(1)">Project</button>
 </div>
+<div class="form" id="media">
+    <div class="item-field-major">
+        <span>Sprites</span> <button>+</button> <button>V</button>
+    </div>
+    <div id="sprites"></div>
+    <div class="item-field-major">
+        <span>Songs</span> <button>+</button> <button>V</button>
+    </div>
+    <div id="songs"></div>
+    <div class="item-field-major">
+        <span>Input</span> <button>+</button> <button>V</button>
+    </div>
+    <div id="inputs"></div>
+</div>
 `
+
+function newActorHTML(actor, n) {
+    let tab = document.createElement("BUTTON");
+    tab.setAttribute("onclick", "onEditorTabClick("+n+")");
+    tab.innerHTML = actor.name;
+
+    let button = document.createElement("div");
+    button.setAttribute("class", "item-field");
+    button.innerHTML = '<span>'+actor.name+'</span><button onclick="editActor('+n+
+    ')">Edit</button> <button onclick="eraseActor('+n+')">Erase</button>';
+
+    return { "tab" : tab.outerHTML, "button" : button.outerHTML };
+}
 
 function addActor(name, content) {
     let tab = document.createElement("BUTTON");
     tab.setAttribute("onclick", "onEditorTabClick("+actors.length+")");
     tab.innerHTML = name;
     let button = document.createElement("div");
-    button.setAttribute("id", "actor-field");
+    button.setAttribute("class", "item-field");
     button.innerHTML = '<span>'+name+'</span><button onclick="editActor('+actors.length+
     ')">Edit</button> <button onclick="eraseActor('+actors.length+')">Erase</button>';
     actors[actors.length] = {"name" : name, "tab" : tab, "button" : button,
@@ -71,6 +98,7 @@ function editActor(id) {
     //alert("edit actor: "+id);
 }
 
+//giving logic interface error
 function eraseActor(id) {
     actors.splice(id, 1);
     let len = actors.length;
@@ -86,6 +114,12 @@ function eraseActor(id) {
     for (let i = 0; i < len; i++) {
         tabs.innerHTML += actors[i].tab.outerHTML;
         actorsList.innerHTML += actors[i].button.outerHTML;
+    }
+    for (let i = 0; i < len; i++) {
+        if (actors[i].editing) {
+            actualEditingActor = i;
+            break;
+        }
     }
 }
 
@@ -126,4 +160,82 @@ function onLateralTabClick(id) {
         editor.setValue(actors[actualEditingActor].content, -1);
     }
     actualPage = id;
+}
+
+
+let sprites = new Array();
+
+function newSpriteHTML(sprite) {
+    let doc = document.createElement("div");
+    doc.setAttribute("class", "item-field");
+    doc.innerHTML = "<spam>"+sprite.alias+"</spam>";
+    return doc.outerHTML;
+}
+
+function expandSprites() {
+    let sprite_area = document.getElementById("sprites");
+    sprite_area.innerHTML = "";
+    let len = sprites.length;
+    for (let i = 0; i < len; i++) {
+        sprite_area.innerHTML += newInputHTML(sprites[i]);
+    }
+}
+
+function addSprite() {
+    sprites[sprites.length] = {
+        "alias" : "to edit",
+        "path"  : "/tmp/",
+    };
+}
+
+
+let songs = new Array();
+
+function newSongHTML(song) {
+    let doc = document.createElement("div");
+    doc.setAttribute("class", "item-field");
+    doc.innerHTML = "<spam>"+song.alias+"</spam>";
+    return doc.outerHTML;
+}
+
+function expandSongs() {
+    let song_area = document.getElementById("songs");
+    song_area.innerHTML = "";
+    let len = songs.length;
+    for (let i = 0; i < len; i++) {
+        song_area.innerHTML += newInputHTML(songs[i]);
+    }
+}
+
+function addSong() {
+    songs[songs.length] = {
+        "alias" : "to edit",
+        "path"  : "/tmp/",
+    };
+}
+
+
+let inputs = new Array();
+
+function newInputHTML(input) {
+    let doc = document.createElement("div");
+    doc.setAttribute("class", "item-field");
+    doc.innerHTML = "<spam>"+input.alias+"</spam>";
+    return doc.outerHTML;
+}
+
+function expandInputs() {
+    let input_area = document.getElementById("inputs");
+    input_area.innerHTML = "";
+    let len = inputs.length;
+    for (let i = 0; i < len; i++) {
+        input_area.innerHTML += newInputHTML(inputs[i]);
+    }
+}
+
+function addInput() {
+    inputs[inputs.length] = {
+        "alias"  : "to edit",
+        "value" : "0",
+    };
 }
