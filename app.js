@@ -62,6 +62,14 @@ pages[1] = `
     </div>
     <div id="inputs"></div>
 </div>
+<div class="edit-form second-form" id="edit-media">
+    <div id="edit-media-form" style="display: flex; flex-direction: column;">
+        <label>Alias:</label>
+        <input id="alias-field" type="text"></text>
+    </div>
+    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
+    </div>
+</div>
 `
 
 function newActorHTML(actor, n) {
@@ -171,7 +179,7 @@ let sprites = new Array();
 function newSpriteHTML(sprite, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<spam>"+sprite.alias+"</spam>";
+    doc.innerHTML = "<span>Alias: "+sprite.alias+" Path: "+sprite.path+"</span> <button onclick='editSprite("+n+")'>Edit</button> <button onclick='eraseSprite("+n+")'>X</button>";
     return doc.outerHTML;
 }
 
@@ -180,16 +188,22 @@ function expandSprites() {
     sprite_area.innerHTML = "";
     let len = sprites.length;
     for (let i = 0; i < len; i++) {
-        sprite_area.innerHTML += newInputHTML(sprites[i]);
+        sprite_area.innerHTML += newSpriteHTML(sprites[i], i);
     }
     document.getElementById("sprites-field").innerHTML =
     '<span>Sprites</span> <button onclick="addSprite()">+</button> <button id="hide-button" onclick="hideSprites()">^</button>';
 }
 
+function eraseSprite(n) {
+    sprites.splice(n, 1);
+    expandSprites();
+}
+
 function addSprite() {
     sprites[sprites.length] = {
-        "alias" : "to edit",
-        "path"  : "/tmp/",
+        "alias"   : "to edit",
+        "path"    : "/tmp/",
+        "editing" : false,
     };
     expandSprites();
 }
@@ -200,6 +214,46 @@ function hideSprites() {
     '<span>Sprites</span> <button onclick="addSprite()">+</button> <button id="expand-button" onclick="expandSprites()">V</button>';
 }
 
+function editSprite(n) {
+    let len = sprites.length;
+    for (let i = 0; i < len; i++) {
+        if (sprites[i].editing) {
+            sprites[i].editing = false;
+        }
+    }
+    sprites[n].editing = true;
+    document.getElementById("edit-media").innerHTML = `
+    <div id="edit-media-form" style="display: flex; flex-direction: column;">
+        <label>Alias:</label> <input id="alias-field" type="text">
+        <label>Path:</label>  <input id="path-field" type="text">
+    </div>
+    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
+        <button onclick="saveSprite()">Save</button> <button onclick="cancelSprite()">Cancel</button>
+    </div>`;
+    document.getElementById("alias-field").value = sprites[n].alias;
+    document.getElementById("path-field").value = sprites[n].path;
+}
+
+    function saveSprite() {
+        let len = sprites.length;
+        for (let i = 0; i < len; i++) {
+            if (sprites[i].editing) {
+                sprites[i].alias = document.getElementById("alias-field").value;
+                sprites[i].path  = document.getElementById("path-field").value;
+                expandSprites();
+            }
+        }
+    }
+
+    function cancelSprite() {
+        let len = sprites.length;
+        for (let i = 0; i < len; i++) {
+            if (sprites[i].editing) {
+                sprites.editing = false;
+            }
+        }
+        document.getElementById("edit-media").innerHTML = "";
+    }
 
 let songs = new Array();
 

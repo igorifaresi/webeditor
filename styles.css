@@ -32,6 +32,17 @@ html, body{
 	flex-grow: 2;
 }
 
+.second-form {
+	display: flex;
+	/*width: 32%;*/
+	flex-direction: column;
+	max-height: 79%;
+	margin-left:  3%;
+	margin-right: 3%;
+	margin-top:   3%;
+	flex-grow: 2;
+}
+
 .item-field-major {
 	display: flex;
 	/*min-width: 100%;*/
