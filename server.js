@@ -6,6 +6,7 @@ var app    = require('express')();
 var server = require('http').Server(app);
 var io     = require('socket.io')(server);
 var fs     = require('fs');
+const { exec } = require('child_process');
 
 server.listen(port);
 
@@ -18,12 +19,20 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log("[log] Listening at "+port);
     socket.on('save', (data) => {
-        console.log("[log] Receiving "+data+" and saving at "+data.path);
-        fs.writeFile(data.path, JSON.stringify(data.data), (err) => {
+        console.log("[log] Creating "+data.dir+" directory");
+        exec('mkdir ' + data.dir, (err, stdout, stderr) => {
             if (err) {
-                return console.log(err);
+                console.log(err);
+            } else {
+                console.log("[log] Directory was created");
             }
-            console.log("[log] File was saved");
+            console.log("[log] Receiving "+data+" and saving at "+data.dir+"/"+data.fileName);
+            fs.writeFile(data.dir+"/"+data.fileName, JSON.stringify(data.data), (err) => {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log("[log] File was saved");
+            });
         });
     });
     socket.on('load', (path) => {
@@ -36,16 +45,21 @@ io.on('connection', (socket) => {
             socket.emit('load_res', JSON.parse(data));
         });
     });
-});
-
-function exportProject(path, buffers) {
-    var len = buffers.length;
-    for (var i = 0; i < len; i++) {
-        fs.writeFile(path+buffers[i].out, buffers[i].content, (err) => {
+    socket.on('export', (data) => {
+        console.log("[log] Creating "+data.dir+" directory");
+        exec('mkdir ' + data.dir, (err, stdout, stderr) => {
             if (err) {
-                return console.log(err);
+                console.log(err);
+            } else {
+                console.log("[log] Directory was created");
             }
-            console.log("[log] file was saved");
+            console.log("[log] Receiving "+data+" and saving at "+data.dir+"/"+data.fileName);
+            fs.writeFile(data.dir+"/"+data.fileName, data.data, (err) => {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log("[log] File was saved");
+            });
         });
-    }
-}
+    });
+});

@@ -31,11 +31,12 @@ addActor("batatinha");
 
 var socket = io('http://localhost:3000/');
 socket.emit('save', {
-    "path" : "/tmp/batatinha.lzw",
-    "data" : "batatinha batatosa fagundes"
+    "dir"      : "/tmp",
+    "fileName" : "batatinha.db4",
+    "data"     : "batatinha batatosa fagundes"
 });
 
-socket.emit('load', "/tmp/batatinha.lzw");
+socket.emit('load', "/tmp/batatinha.db4");
 
 socket.on('load_res', (data) => {
     alert("i receive "+data);
@@ -63,12 +64,6 @@ pages[1] = `
     <div id="inputs"></div>
 </div>
 <div class="edit-form second-form" id="edit-media">
-    <div id="edit-media-form" style="display: flex; flex-direction: column;">
-        <label>Alias:</label>
-        <input id="alias-field" type="text"></text>
-    </div>
-    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
-    </div>
 </div>
 `
 
@@ -179,7 +174,7 @@ let sprites = new Array();
 function newSpriteHTML(sprite, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<span>Alias: "+sprite.alias+" Path: "+sprite.path+"</span> <button onclick='editSprite("+n+")'>Edit</button> <button onclick='eraseSprite("+n+")'>X</button>";
+    doc.innerHTML = "<span>Alias: "+sprite.alias+"</span><span>Path: "+sprite.path+"</span> <button onclick='editSprite("+n+")'>Edit</button> <button onclick='eraseSprite("+n+")'>X</button>";
     return doc.outerHTML;
 }
 
@@ -249,18 +244,19 @@ function editSprite(n) {
         let len = sprites.length;
         for (let i = 0; i < len; i++) {
             if (sprites[i].editing) {
-                sprites.editing = false;
+                sprites[i].editing = false;
             }
         }
         document.getElementById("edit-media").innerHTML = "";
     }
 
+
 let songs = new Array();
 
-function newSongHTML(song) {
+function newSongHTML(song, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<spam>"+song.alias+"</spam>";
+    doc.innerHTML = "<span>Alias: "+song.alias+"</span><span>Path: "+song.path+"</span> <button onclick='editSong("+n+")'>Edit</button> <button onclick='eraseSong("+n+")'>X</button>";
     return doc.outerHTML;
 }
 
@@ -269,16 +265,22 @@ function expandSongs() {
     song_area.innerHTML = "";
     let len = songs.length;
     for (let i = 0; i < len; i++) {
-        song_area.innerHTML += newInputHTML(songs[i]);
+        song_area.innerHTML += newSongHTML(songs[i], i);
     }
     document.getElementById("songs-field").innerHTML =
     '<span>Songs</span> <button onclick="addSong()">+</button> <button id="hide-button" onclick="hideSongs()">^</button>';
 }
 
+function eraseSong(n) {
+    songs.splice(n, 1);
+    expandSongs();
+}
+
 function addSong() {
     songs[songs.length] = {
-        "alias" : "to edit",
-        "path"  : "/tmp/",
+        "alias"   : "to edit",
+        "path"    : "/tmp/",
+        "editing" : false,
     };
     expandSongs();
 }
@@ -289,13 +291,53 @@ function hideSongs() {
     '<span>Songs</span> <button onclick="addSong()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>';
 }
 
+function editSong(n) {
+    let len = songs.length;
+    for (let i = 0; i < len; i++) {
+        if (songs[i].editing) {
+            songs[i].editing = false;
+        }
+    }
+    songs[n].editing = true;
+    document.getElementById("edit-media").innerHTML = `
+    <div id="edit-media-form" style="display: flex; flex-direction: column;">
+        <label>Alias:</label> <input id="alias-field" type="text">
+        <label>Path:</label>  <input id="path-field" type="text">
+    </div>
+    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
+        <button onclick="saveSong()">Save</button> <button onclick="cancelSong()">Cancel</button>
+    </div>`;
+    document.getElementById("alias-field").value = songs[n].alias;
+    document.getElementById("path-field").value  = songs[n].path;
+}
+
+    function saveSong() {
+        let len = songs.length;
+        for (let i = 0; i < len; i++) {
+            if (songs[i].editing) {
+                songs[i].alias = document.getElementById("alias-field").value;
+                songs[i].path  = document.getElementById("path-field").value;
+                expandSongs();
+            }
+        }
+    }
+
+    function cancelSong() {
+        let len = songs.length;
+        for (let i = 0; i < len; i++) {
+            if (songs[i].editing) {
+                songs[i].editing = false;
+            }
+        }
+        document.getElementById("edit-media").innerHTML = "";
+    }
 
 let inputs = new Array();
 
-function newInputHTML(input) {
+function newInputHTML(input, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<spam>"+input.alias+"</spam>";
+    doc.innerHTML = "<span>Alias: "+input.alias+"</span><span>Value: "+input.value+"</span> <button onclick='editInput("+n+")'>Edit</button> <button onclick='eraseInput("+n+")'>X</button>";
     return doc.outerHTML;
 }
 
@@ -304,16 +346,22 @@ function expandInputs() {
     input_area.innerHTML = "";
     let len = inputs.length;
     for (let i = 0; i < len; i++) {
-        input_area.innerHTML += newInputHTML(inputs[i]);
+        input_area.innerHTML += newInputHTML(inputs[i], i);
     }
     document.getElementById("inputs-field").innerHTML =
-    '<span>Input</span> <button onclick="addInput()">+</button> <button id="hide-button" onclick="hideInputs()">^</button>';
+    '<span>Inputs</span> <button onclick="addInput()">+</button> <button id="hide-button" onclick="hideInputs()">^</button>';
+}
+
+function eraseInput(n) {
+    inputs.splice(n, 1);
+    expandInputs();
 }
 
 function addInput() {
     inputs[inputs.length] = {
-        "alias"  : "to edit",
-        "value" : "0",
+        "alias"   : "to edit",
+        "value"   : 0,
+        "editing" : false,
     };
     expandInputs();
 }
@@ -321,5 +369,105 @@ function addInput() {
 function hideInputs() {
     document.getElementById("inputs").innerHTML = "";
     document.getElementById("inputs-field").innerHTML =
-    '<span>Input</span> <button onclick="addInput()">+</button> <button id="expand-button" onclick="expandInputs()">V</button>';
+    '<span>Inputs</span> <button onclick="addInput()">+</button> <button id="expand-button" onclick="expandInputs()">V</button>';
+}
+
+function editInput(n) {
+    let len = inputs.length;
+    for (let i = 0; i < len; i++) {
+        if (inputs[i].editing) {
+            inputs[i].editing = false;
+        }
+    }
+    inputs[n].editing = true;
+    document.getElementById("edit-media").innerHTML = `
+    <div id="edit-media-form" style="display: flex; flex-direction: column;">
+        <label>Alias:</label> <input id="alias-field" type="text">
+        <label>Path:</label>  <input id="value-field" type="text">
+    </div>
+    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
+        <button onclick="saveInput()">Save</button> <button onclick="cancelInput()">Cancel</button>
+    </div>`;
+    document.getElementById("alias-field").value = inputs[n].alias;
+    document.getElementById("value-field").value = inputs[n].value;
+}
+
+    function saveInput() {
+        let len = inputs.length;
+        for (let i = 0; i < len; i++) {
+            if (inputs[i].editing) {
+                inputs[i].alias = document.getElementById("alias-field").value;
+                inputs[i].value = document.getElementById("value-field").value;
+                expandInputs();
+            }
+        }
+    }
+
+    function cancelInput() {
+        let len = inputs.length;
+        for (let i = 0; i < len; i++) {
+            if (inputs[i].editing) {
+                inputs[i].editing = false;
+            }
+        }
+        document.getElementById("edit-media").innerHTML = "";
+    }
+    
+
+/*
+ * Project management
+ */
+
+function exportProject() {
+    let actorsQnt = actors.length;
+    for (let i = 0; i < actorsQnt; i++) {
+        socket.emit('export', {
+            "dir"      : "/home/ifaresi/luagame/actors",
+            "fileName" : actors[i].name+".lua",
+            "data"     : actors[i].content,
+        });
+    }
+
+    let project = "media = { ";
+    let spritesQnt = sprites.length;
+    for (let i = 0; i < spritesQnt; i++) {
+        project += `
+    {
+        type  = "sprite",
+        path  = "`+sprites[i].path+`",
+        alias = "`+sprites[i].alias+`",
+    },
+`;
+    }
+
+    let songsQnt = songs.length;
+    for (let i = 0; i < songsQnt; i++) {
+        project += `
+    {
+        type  = "song",
+        path  = "`+songs[i].path+`",
+        alias = "`+songs[i].alias+`",
+    },
+`;
+    }
+
+    let inputsQnt  = inputs.length;
+    for (let i = 0; i < inputsQnt; i++) {
+        project +=`
+    {
+        type  = "input",
+        value = `+inputs[i].value+`,
+        alias = "`+inputs[i].alias+`",
+    },
+`;
+    }
+    project += "}";
+
+    socket.emit('export', {
+        "dir"      : "/home/ifaresi/luagame/",
+        "fileName" : "project.lua",
+        "data"     :  project,
+    });
+
+    alert("The project was exported");
 }
