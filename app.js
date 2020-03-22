@@ -49,16 +49,16 @@ pages[1] = `
     <button onclick="onLateralTabClick(1)">Project</button>
 </div>
 <div class="form" id="media">
-    <div class="item-field-major">
-        <span>Sprites</span> <button>+</button> <button>V</button>
+    <div id="sprites-field" class="item-field-major">
+        <span>Sprites</span> <button onclick="addSprite()">+</button> <button id="expand-button" onclick="expandSprites()">V</button>
     </div>
     <div id="sprites"></div>
-    <div class="item-field-major">
-        <span>Songs</span> <button>+</button> <button>V</button>
+    <div id="songs-field" class="item-field-major">
+        <span>Songs</span> <button onclick="addSong()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>
     </div>
     <div id="songs"></div>
-    <div class="item-field-major">
-        <span>Input</span> <button>+</button> <button>V</button>
+    <div id="inputs-field" class="item-field-major">
+        <span>Input</span> <button onclick="addInput()">+</button> <button id="expand-button" onclick="expandInputs()">V</button>
     </div>
     <div id="inputs"></div>
 </div>
@@ -168,7 +168,7 @@ function onLateralTabClick(id) {
 
 let sprites = new Array();
 
-function newSpriteHTML(sprite) {
+function newSpriteHTML(sprite, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
     doc.innerHTML = "<spam>"+sprite.alias+"</spam>";
@@ -182,6 +182,8 @@ function expandSprites() {
     for (let i = 0; i < len; i++) {
         sprite_area.innerHTML += newInputHTML(sprites[i]);
     }
+    document.getElementById("sprites-field").innerHTML =
+    '<span>Sprites</span> <button onclick="addSprite()">+</button> <button id="hide-button" onclick="hideSprites()">^</button>';
 }
 
 function addSprite() {
@@ -189,6 +191,13 @@ function addSprite() {
         "alias" : "to edit",
         "path"  : "/tmp/",
     };
+    expandSprites();
+}
+
+function hideSprites() {
+    document.getElementById("sprites").innerHTML = "";
+    document.getElementById("sprites-field").innerHTML =
+    '<span>Sprites</span> <button onclick="addSprite()">+</button> <button id="expand-button" onclick="expandSprites()">V</button>';
 }
 
 
@@ -208,6 +217,8 @@ function expandSongs() {
     for (let i = 0; i < len; i++) {
         song_area.innerHTML += newInputHTML(songs[i]);
     }
+    document.getElementById("songs-field").innerHTML =
+    '<span>Songs</span> <button onclick="addSong()">+</button> <button id="hide-button" onclick="hideSongs()">^</button>';
 }
 
 function addSong() {
@@ -215,6 +226,13 @@ function addSong() {
         "alias" : "to edit",
         "path"  : "/tmp/",
     };
+    expandSongs();
+}
+
+function hideSongs() {
+    document.getElementById("songs").innerHTML = "";
+    document.getElementById("songs-field").innerHTML =
+    '<span>Songs</span> <button onclick="addSong()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>';
 }
 
 
@@ -234,6 +252,8 @@ function expandInputs() {
     for (let i = 0; i < len; i++) {
         input_area.innerHTML += newInputHTML(inputs[i]);
     }
+    document.getElementById("inputs-field").innerHTML =
+    '<span>Input</span> <button onclick="addInput()">+</button> <button id="hide-button" onclick="hideInputs()">^</button>';
 }
 
 function addInput() {
@@ -241,4 +261,11 @@ function addInput() {
         "alias"  : "to edit",
         "value" : "0",
     };
+    expandInputs();
+}
+
+function hideInputs() {
+    document.getElementById("inputs").innerHTML = "";
+    document.getElementById("inputs-field").innerHTML =
+    '<span>Input</span> <button onclick="addInput()">+</button> <button id="expand-button" onclick="expandInputs()">V</button>';
 }

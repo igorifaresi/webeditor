@@ -35,7 +35,8 @@ var LuaHighlightRules = function() {
         "foreachi|maxn|foreach|concat|sort|remove|resume|yield|"+
         "status|wrap|create|running|"+
         "__add|__sub|__mod|__unm|__concat|__lt|__index|__call|__gc|__metatable|"+
-         "__mul|__div|__pow|__len|__eq|__le|__newindex|__tostring|__mode|__tonumber"
+         "__mul|__div|__pow|__len|__eq|__le|__newindex|__tostring|__mode|__tonumber"+
+         "|Move|Rotate|CheckState"
     );
 
     var stdLibaries = ("string|package|os|io|math|debug|table|coroutine");
