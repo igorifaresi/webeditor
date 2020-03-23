@@ -35,16 +35,16 @@ io.on('connection', (socket) => {
             });
         });
     });
-    socket.on('load', (path) => {
-        console.log("[log] Loading data at "+path);
-        fs.readFile(path, (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-            console.log("[log] File was loaded");
-            socket.emit('load_res', JSON.parse(data));
-        });
-    });
+    //socket.on('load', (path) => {
+    //    console.log("[log] Loading data at "+path);
+    //    fs.readFile(path, (err, data) => {
+    //        if (err) {
+    //            return console.log(err);
+    //        }
+    //        console.log("[log] File was loaded");
+    //        socket.emit('load_res', JSON.parse(data));
+    //    });
+    //});
     socket.on('export', (data) => {
         console.log("[log] Creating "+data.dir+" directory");
         exec('mkdir ' + data.dir, (err, stdout, stderr) => {

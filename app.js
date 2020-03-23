@@ -9,7 +9,7 @@ end
 
 //initing the editor
 var editor = ace.edit("editor");
-editor.setTheme("ace/theme/ambiance");
+editor.setTheme("ace/theme/chrome");
 editor.session.setMode("ace/mode/lua");
 editor.setOptions({
     fontFamily: "monospace",
@@ -46,8 +46,8 @@ socket.on('load_res', (data) => {
 
 pages[1] = `
 <div id="lateral-bar">
-    <button onclick="onLateralTabClick(0)">Actors</button>
-    <button onclick="onLateralTabClick(1)">Project</button>
+    <button onclick="onLateralTabClick(0)"><span class="actor_icon"></span>Actors</button>
+    <button onclick="onLateralTabClick(1)"><span class="project_icon"></span>Project</button>
 </div>
 <div class="form" id="media">
     <div id="sprites-field" class="item-field-major">
@@ -157,7 +157,7 @@ function onLateralTabClick(id) {
     if (id == 0) {
         document.getElementById("editor").innerHTML = "";
         editor = ace.edit("editor");
-        editor.setTheme("ace/theme/ambiance");
+        editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/lua");
         editor.setOptions({
             fontFamily: "monospace",
