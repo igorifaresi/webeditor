@@ -74,7 +74,7 @@ function newActorHTML(actor, n) {
 
     let button = document.createElement("div");
     button.setAttribute("class", "item-field");
-    button.innerHTML = '<span>'+actor.name+'</span><button onclick="editActor('+n+
+    button.innerHTML = '<span>'+actor.name+'</span><span class="icon"></span><button onclick="editActor('+n+
     ')">Edit</button> <button onclick="eraseActor('+n+')">Erase</button>';
 
     if (!actor.editing) {
