@@ -74,8 +74,8 @@ function newActorHTML(actor, n) {
 
     let button = document.createElement("div");
     button.setAttribute("class", "item-field");
-    button.innerHTML = '<span>'+actor.name+'</span><span class="icon"></span><button onclick="editActor('+n+
-    ')">Edit</button> <button onclick="eraseActor('+n+')">Erase</button>';
+    button.innerHTML = '<span>'+actor.name+'</span><button onclick="editActor('+n+
+    ')"><span class="icon icon_edit"></span></button> <button onclick="eraseActor('+n+')"><span class="icon icon_erase"></span></button>';
 
     if (!actor.editing) {
         tab.setAttribute("id", "tab-inactive");
@@ -174,7 +174,7 @@ let sprites = new Array();
 function newSpriteHTML(sprite, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<span>Alias: "+sprite.alias+"</span><span>Path: "+sprite.path+"</span> <button onclick='editSprite("+n+")'>Edit</button> <button onclick='eraseSprite("+n+")'>X</button>";
+    doc.innerHTML = "<span>Alias: "+sprite.alias+"</span><span>Path: "+sprite.path+"</span> <button onclick='editSprite("+n+")'><span class='icon icon_edit'></span></button> <button onclick='eraseSprite("+n+")'><span class='icon icon_erase'></span></button>";
     return doc.outerHTML;
 }
 
@@ -256,7 +256,7 @@ let songs = new Array();
 function newSongHTML(song, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<span>Alias: "+song.alias+"</span><span>Path: "+song.path+"</span> <button onclick='editSong("+n+")'>Edit</button> <button onclick='eraseSong("+n+")'>X</button>";
+    doc.innerHTML = "<span>Alias: "+song.alias+"</span><span>Path: "+song.path+"</span> <button onclick='editSong("+n+")'><span class='icon icon_edit'></span></button> <button onclick='eraseSong("+n+")'><span class='icon icon_erase'></span></button>";
     return doc.outerHTML;
 }
 
@@ -337,7 +337,7 @@ let inputs = new Array();
 function newInputHTML(input, n) {
     let doc = document.createElement("div");
     doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<span>Alias: "+input.alias+"</span><span>Value: "+input.value+"</span> <button onclick='editInput("+n+")'>Edit</button> <button onclick='eraseInput("+n+")'>X</button>";
+    doc.innerHTML = "<span>Alias: "+input.alias+"</span><span>Value: "+input.value+"</span> <button onclick='editInput("+n+")'><span class='icon icon_edit'></span></button> <button onclick='eraseInput("+n+")'><span class='icon icon_erase'></span></button>";
     return doc.outerHTML;
 }
 

@@ -49,6 +49,7 @@ button {
 }
 
 .item-field-major {
+	border-radius: 5px;
 	display: flex;
 	/*min-width: 100%;*/
 	flex-direction: row;
@@ -57,9 +58,9 @@ button {
 	display: block;*/
 	margin-bottom: 3px;
 	background-color: white;
-	-webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
-  	-moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
-	box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.3);
+	-webkit-box-shadow: 2px 2px 3px 0px rgba(0,0,0,0.3);
+  	-moz-box-shadow: 2px 2px 3px 0px rgba(0,0,0,0.3);
+	box-shadow: 2px 2px 3px 0px rgba(0,0,0,0.3);
 	  
 	justify-content: center;
 	align-items: center;
@@ -93,14 +94,50 @@ button {
 	flex-grow: 2;
 }
 
-.item-field .icon {
+.item-field button {
+	display: grid;
+	width: 40px;
+	height: 30px;
+	font-weight: bold;
+	/*color: #faab1a;*/
+	background-color: Transparent;
+	background-repeat:no-repeat;
+	border: none;
+	cursor:pointer;
+	overflow: hidden;
+	outline:none;
+	/*flex-direction: column;*/
+}
+
+.item-field .icon_expand {
 	background: url(assets/actor_icon.png) no-repeat;
-	float: left;
-    	/*width: 100%;*/
-	height: 15px;
+}
+
+.item-field .icon_hide {
+	background: url(assets/actor_icon.png) no-repeat;
+}
+
+.item-field .icon_add {
+	background: url(assets/actor_icon.png) no-repeat;
+}
+
+.item-field .icon_edit {
+	background: url(assets/actor_icon.png) no-repeat;
+}
+
+.item-field .icon_erase {
+	background: url(assets/actor_icon.png) no-repeat;
+}
+
+.item-field .icon {
+	flex-grow: 2;
+	/*float: left;*/
+	/*width: 100%;*/
+	margin-top: 5px;    
+	height: 20px;
 	/*width: 15px;*/
 	/*padding-top: 100.0%;*/
-    	background-size: 100% 100%;
+    	background-size: 20px 20px;
     	/*margin-right: 10px;*/
 }
 
