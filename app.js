@@ -38,6 +38,12 @@ socket.emit('save', {
 
 socket.emit('load', "/tmp/batatinha.db4");
 
+socket.emit('get-markdown', 'teste.md');
+
+socket.on('get-markdown-resp', (data) => {
+    alert(data);
+});
+
 socket.on('load_res', (data) => {
     alert("i receive "+data);
 });
@@ -48,6 +54,7 @@ pages[1] = `
 <div id="lateral-bar">
     <button onclick="onLateralTabClick(0)"><span class="actor_icon"></span>Actors</button>
     <button onclick="onLateralTabClick(1)"><span class="project_icon"></span>Project</button>
+    <button onclick="onLateralTabClick(2)"><span class="project_icon"></span>Docs</button>
 </div>
 <div class="form" id="media">
     <div id="sprites-field" class="item-field-major">
@@ -64,6 +71,22 @@ pages[1] = `
     <div id="inputs"></div>
 </div>
 <div class="edit-form second-form" id="edit-media">
+</div>
+`
+
+pages[2] = `
+<div id="lateral-bar">
+    <button onclick="onLateralTabClick(0)"><span class="actor_icon"></span>Actors</button>
+    <button onclick="onLateralTabClick(1)"><span class="project_icon"></span>Project</button>
+    <button onclick="onLateralTabClick(2)"><span class="project_icon"></span>Docs</button>
+</div>
+<div class="form" id="doc">
+    <h2 id="welcometothedocs">Welcome to the docs!</h2>
+    <p>For learn, and get some examples, check beside.</p>
+    <p><img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" alt="Alt Text" /></p>
+</div>
+<div class="second-form" id="doc-tree">
+    <div class="item-field"><span>teste</span><button><span class="icon icon_edit"></span></button></div>
 </div>
 `
 
@@ -95,6 +118,11 @@ function addActor(name) {
     let tmp = newActorHTML(actors[actors.length - 1], actors.length - 1);
     document.getElementById("editor-tabs").innerHTML += tmp.tab;
     document.getElementById("actors").innerHTML += tmp.button;
+    if (actors.length == 1) {
+        actors[0].editing = true;
+        editor.setValue(actors[0].content, -1);
+        onEditorTabClick(0);
+    }
 }
 
 function editActor(id) {

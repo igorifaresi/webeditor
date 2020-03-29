@@ -2,10 +2,12 @@ const port    = 3000;
 const path    = require('path');
 const express = require('express');
 
-var app    = require('express')();
-var server = require('http').Server(app);
-var io     = require('socket.io')(server);
-var fs     = require('fs');
+var showdown  = require('showdown');
+var markdownConverter = new showdown.Converter();
+var app      = require('express')();
+var server   = require('http').Server(app);
+var io       = require('socket.io')(server);
+var fs       = require('fs');
 const { exec } = require('child_process');
 
 server.listen(port);
@@ -60,6 +62,16 @@ io.on('connection', (socket) => {
                 }
                 console.log("[log] File was saved");
             });
+        });
+    });
+    socket.on('get-markdown', (data) => {
+        console.log("[log] Asking for "+__dirname+"/doc/"+data+" markdown html");
+        fs.readFile(__dirname+"/doc/"+data, (err, file) => {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("[log] File was loaded 'get-markdown'");
+            socket.emit('get-markdown-resp', markdownConverter.makeHtml(file.toString()));
         });
     });
 });

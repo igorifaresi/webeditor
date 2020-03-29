@@ -15,6 +15,7 @@
     "jsoncomp": "^1.6.1",
     "mkdirp": "^1.0.3",
     "path": "^0.12.7",
+    "showdown": "^1.9.1",
     "socket.io": "^2.3.0"
   }
 }

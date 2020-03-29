@@ -218,6 +218,7 @@ button {
 }
 
 #lateral-bar button{
+	margin-top: 5px;
 	display: flex;
 	flex-direction: column;
 	font-weight: bold;
@@ -233,7 +234,7 @@ button {
 }
 
 #lateral-bar .actor_icon{
-	background: url(assets/actor_icon.png) no-repeat;
+	background: url(assets/actor_icon_yellow.png) no-repeat;
 	float: left;
     	width: 100%;
 	/*height: 100%;*/
@@ -243,7 +244,7 @@ button {
 }
 
 #lateral-bar .project_icon{
-	background: url(assets/project_icon.png) no-repeat;
+	background: url(assets/project_icon_yellow.png) no-repeat;
 	float: left;
     	width: 100%;
 	    /*height: 100%;*/
@@ -257,3 +258,14 @@ button {
 	/*width: 20px;
 	height: 20px;*/
 /*}*/
+
+
+#media {
+	height: 80%;
+	overflow: auto;
+}
+
+#doc {
+	/*background-color: white;*/
+	overflow-y: auto;
+}
