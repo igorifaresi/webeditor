@@ -46,6 +46,7 @@ button {
 	margin-right: 3%;
 	margin-top:   3%;
 	flex-grow: 2;
+	overflow-y: auto;
 }
 
 .item-field-major {

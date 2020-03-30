@@ -38,11 +38,11 @@ socket.emit('save', {
 
 socket.emit('load', "/tmp/batatinha.db4");
 
-socket.emit('get-markdown', 'teste.md');
-
-socket.on('get-markdown-resp', (data) => {
-    alert(data);
-});
+//socket.emit('get-markdown', 'teste.md');
+//
+//socket.on('get-markdown-resp', (data) => {
+//    alert(data);
+//});
 
 socket.on('load_res', (data) => {
     alert("i receive "+data);
@@ -86,7 +86,9 @@ pages[2] = `
     <p><img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" alt="Alt Text" /></p>
 </div>
 <div class="second-form" id="doc-tree">
-    <div class="item-field"><span>teste</span><button><span class="icon icon_edit"></span></button></div>
+    <div class="item-field"><span>Page 1</span><button onclick="loadDoc('page1.md')"><span class="icon icon_edit"></span></button></div>
+    <div class="item-field"><span>Page 2</span><button onclick="loadDoc('page2.md')"><span class="icon icon_edit"></span></button></div>
+    <div class="item-field"><span>Page 3</span><button onclick="loadDoc('page3.md')"><span class="icon icon_edit"></span></button></div>
 </div>
 `
 
@@ -441,6 +443,16 @@ function editInput(n) {
         document.getElementById("edit-media").innerHTML = "";
     }
     
+/*
+ * 
+ */
+function loadDoc(name) {
+    socket.emit('get-markdown', name);
+
+    socket.on('get-markdown-resp', (data) => {
+        document.getElementById("doc").innerHTML = data;
+    });
+}
 
 /*
  * Project management
