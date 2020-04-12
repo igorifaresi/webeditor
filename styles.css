@@ -26,16 +26,6 @@ button {
   	margin-top: 3%;
 }
 
-#actors {
-	display: flex;
-	/*width: 32%;*/
-	flex-direction: column;
-	max-height: 79%;
-	margin-left:  3%;
-	margin-right: 3%;
-	margin-top:   3%;
-	flex-grow: 2;
-}
 
 .second-form {
 	display: flex;
@@ -46,6 +36,23 @@ button {
 	margin-right: 3%;
 	margin-top:   3%;
 	flex-grow: 2;
+	overflow-y: auto;
+}
+
+#actors-form {
+	margin-top: 0%;
+	margin-left:  0%;
+	margin-right: 0%;
+}
+
+#actors-form-top {
+	min-height: 50px;
+}
+
+#actors-list {
+	flex-grow: 2;
+	margin-left:  4%;
+	margin-right: 4%;
 	overflow-y: auto;
 }
 
@@ -178,6 +185,12 @@ button {
 }
 
 #editor-form {
+	height: 87%; 
+	width: 60%;
+	/*display:inline-block;
+	position:relative;*/
+	margin-left: 0%;
+	margin-top: 0%;
 	/*display shadow*/
 	/*-webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);
 	-moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);

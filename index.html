@@ -42,11 +42,19 @@
 end
         </div>
     </div>
-    <div id="actors"></div>
+    <div id="actors-form" class="second-form">
+        <div class="item-field-major" id="actors-form-top">
+            <span>Actors</span> <button onclick="addActor('foo')">+</button>
+        </div>
+        <div id="actors-list">
+            <div id="actors"></div>
+        </div>
+    </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
+<script src="js/socket.io.js"></script>
 <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="ifr_api.js" type="text/javascript" charset="utf-8"></script>
 <script src="app.js" type="text/javascript" charset="utf-8"></script>
 
 </body>

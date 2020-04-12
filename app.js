@@ -21,34 +21,15 @@ var actors = new Array();
 let actualEditingActor = 0;
 let actualPage = 0;
 
-//tests
-
 addActor("foo");
 addActor("bar");
 addActor("baz");
 addActor("batatinha");
 
-
 var socket = io('http://localhost:3000/');
-socket.emit('save', {
-    "dir"      : "/tmp",
-    "fileName" : "batatinha.db4",
-    "data"     : "batatinha batatosa fagundes"
-});
 
-socket.emit('load', "/tmp/batatinha.db4");
 
-//socket.emit('get-markdown', 'teste.md');
-//
-//socket.on('get-markdown-resp', (data) => {
-//    alert(data);
-//});
-
-socket.on('load_res', (data) => {
-    alert("i receive "+data);
-});
-
-//end tests
+// main pages -----------------------------------------------------------------
 
 pages[1] = `
 <div id="lateral-bar">
@@ -62,7 +43,7 @@ pages[1] = `
     </div>
     <div id="sprites"></div>
     <div id="songs-field" class="item-field-major">
-        <span>Songs</span> <button onclick="addSong()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>
+        <span>Songs</span> <button onclick="_songs.addItem()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>
     </div>
     <div id="songs"></div>
     <div id="inputs-field" class="item-field-major">
@@ -91,6 +72,9 @@ pages[2] = `
     <div class="item-field"><span>Page 3</span><button onclick="loadDoc('page3.md')"><span class="icon icon_edit"></span></button></div>
 </div>
 `
+
+
+// actors behaviour -----------------------------------------------------------
 
 function newActorHTML(actor, n) {
     let tab = document.createElement("BUTTON");
@@ -133,7 +117,6 @@ function editActor(id) {
     onEditorTabClick(id);
 }
 
-//giving logic interface error
 function eraseActor(id) {
     actors.splice(id, 1);
     let len = actors.length;
@@ -198,6 +181,8 @@ function onLateralTabClick(id) {
     actualPage = id;
 }
 
+
+// sprites management ---------------------------------------------------------
 
 let sprites = new Array();
 
@@ -281,22 +266,29 @@ function editSprite(n) {
     }
 
 
+// songs management -----------------------------------------------------------
+
 let songs = new Array();
 
 function newSongHTML(song, n) {
-    let doc = document.createElement("div");
-    doc.setAttribute("class", "item-field");
-    doc.innerHTML = "<span>Alias: "+song.alias+"</span><span>Path: "+song.path+"</span> <button onclick='editSong("+n+")'><span class='icon icon_edit'></span></button> <button onclick='eraseSong("+n+")'><span class='icon icon_erase'></span></button>";
-    return doc.outerHTML;
+    //let doc = document.createElement("div");
+    //doc.setAttribute("class", "item-field");
+    //doc.innerHTML = "<span>Alias: "+song.alias+"</span><span>Path: "+song.path+"</span> <button onclick='editSong("+n+")'><span class='icon icon_edit'></span></button> <button onclick='eraseSong("+n+")'><span class='icon icon_erase'></span></button>";
+    //return doc.outerHTML;
+    return newItemForm(
+        [{title: 'Alias', content: song.alias}, {title: 'Path', content: song.path}],
+        [{onclick: 'editSong('+n+')', iconClass: 'icon_edit'}, {onclick: 'eraseSong('+n+')', iconClass: 'icon_erase'}]
+    );
 }
 
 function expandSongs() {
-    let song_area = document.getElementById("songs");
-    song_area.innerHTML = "";
-    let len = songs.length;
-    for (let i = 0; i < len; i++) {
-        song_area.innerHTML += newSongHTML(songs[i], i);
-    }
+    //let song_area = document.getElementById("songs");
+    //song_area.innerHTML = "";
+    //let len = songs.length;
+    //for (let i = 0; i < len; i++) {
+    //    song_area.innerHTML += newSongHTML(songs[i], i);
+    //}
+    fillArea("songs", newSongHTML, songs);
     document.getElementById("songs-field").innerHTML =
     '<span>Songs</span> <button onclick="addSong()">+</button> <button id="hide-button" onclick="hideSongs()">^</button>';
 }
@@ -322,45 +314,112 @@ function hideSongs() {
 }
 
 function editSong(n) {
-    let len = songs.length;
-    for (let i = 0; i < len; i++) {
-        if (songs[i].editing) {
-            songs[i].editing = false;
-        }
-    }
-    songs[n].editing = true;
-    document.getElementById("edit-media").innerHTML = `
-    <div id="edit-media-form" style="display: flex; flex-direction: column;">
-        <label>Alias:</label> <input id="alias-field" type="text">
-        <label>Path:</label>  <input id="path-field" type="text">
-    </div>
-    <div id="edit-media-submit" style="display: flex; flex-direction: row;">
-        <button onclick="saveSong()">Save</button> <button onclick="cancelSong()">Cancel</button>
-    </div>`;
-    document.getElementById("alias-field").value = songs[n].alias;
-    document.getElementById("path-field").value  = songs[n].path;
+    //let len = songs.length;
+    //for (let i = 0; i < len; i++) {
+    //    if (songs[i].editing) {
+    //        songs[i].editing = false;
+    //    }
+    //}
+    //songs[n].editing = true;
+    //document.getElementById("edit-media").innerHTML = `
+    //<div id="edit-media-form" style="display: flex; flex-direction: column;">
+    //    <label>Alias:</label> <input id="alias-field" type="text">
+    //    <label>Path:</label>  <input id="path-field" type="text">
+    //</div>
+    //<div id="edit-media-submit" style="display: flex; flex-direction: row;">
+    //    <button onclick="saveSong()">Save</button> <button onclick="cancelSong()">Cancel</button>
+    //</div>`;
+    //document.getElementById("alias-field").value = songs[n].alias;
+    //document.getElementById("path-field").value  = songs[n].path;
+    editItem("edit-media", songs, ["alias", "path"], n);
 }
 
     function saveSong() {
-        let len = songs.length;
-        for (let i = 0; i < len; i++) {
-            if (songs[i].editing) {
-                songs[i].alias = document.getElementById("alias-field").value;
-                songs[i].path  = document.getElementById("path-field").value;
-                expandSongs();
-            }
-        }
+        //let len = songs.length;
+        //for (let i = 0; i < len; i++) {
+        //    if (songs[i].editing) {
+        //        songs[i].alias = document.getElementById("alias-field").value;
+        //        songs[i].path  = document.getElementById("path-field").value;
+        //        expandSongs();
+        //    }
+        //}
+        saveEditing(songs, ["alias", "path"], expandSongs);
     }
 
     function cancelSong() {
-        let len = songs.length;
-        for (let i = 0; i < len; i++) {
-            if (songs[i].editing) {
-                songs[i].editing = false;
-            }
-        }
-        document.getElementById("edit-media").innerHTML = "";
+        //let len = songs.length;
+        //for (let i = 0; i < len; i++) {
+        //    if (songs[i].editing) {
+        //        songs[i].editing = false;
+        //    }
+        //}
+        //document.getElementById("edit-media").innerHTML = "";
+        cancelEditing("edit-media", songs);
     }
+
+class ProjectItemGroup {
+    constructor(info) {
+        this.array             = new Array();
+        this.groupName         = info.group;
+        this.title             = info.title;
+        this.fields            = info.fields;
+        this.htmlItensField    = info.htmlItensField;
+        this.htmlEditItemField = info.htmlEditItemField;
+        this._defaultItem      = info.defaultItem; 
+    }
+    newItemHTML(item, n) {
+        return newItemForm(
+            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
+            [{onclick: '_songs.edit('+n+')', iconClass: 'icon_edit'}, {onclick: '_songs.erase('+n+')', iconClass: 'icon_erase'}]
+        );
+    }
+    expand() {
+        fillArea("songs", this.newItemHTML, this.array);
+        document.getElementById("songs-field").innerHTML =
+        '<span>Songs</span> <button onclick="_songs.addItem()">+</button>'+
+        '<button id="hide-button" onclick="_songs.hide()">^</button>'     ;
+    }
+    hide() {
+        document.getElementById("songs").innerHTML = "";
+        document.getElementById("songs-field").innerHTML =
+        '<span>Songs</span> <button onclick="_songs.addItem()">+</button>'+
+        '<button id="expand-button" onclick="_songs.expand()">V</button>' ;
+    }
+    erase(n) {
+        this.array.splice(n, 1);
+        this.expand();
+    }
+    addItem() {
+        let tmp = this._defaultItem;
+        tmp.editing = false;
+        this.array[this.array.length] = Object.assign({}, tmp);
+        this.expand();
+    }
+    edit(n) {
+        editItem("_songs", "edit-media", this.array, this.fields, n);
+    }
+    save() {
+        saveEditing(this.array, this.fields);
+        this.expand();
+    }
+    cancel() {
+        cancelEditing("edit-media", this.array);
+    }
+};
+
+let _songs = new ProjectItemGroup({
+    group: "songs", 
+    title: "Songs", 
+    fields: ["alias", "path"],
+    htmlItensField: "songs",
+    htmlEditItemField: "edit-media",
+    defaultItem: {
+        alias   : "to edit",
+        path    : "/tmp/",
+    },
+});
+
+//inputs management -----------------------------------------------------------
 
 let inputs = new Array();
 
@@ -442,10 +501,10 @@ function editInput(n) {
         }
         document.getElementById("edit-media").innerHTML = "";
     }
+
     
-/*
- * 
- */
+// documentation management ---------------------------------------------------
+
 function loadDoc(name) {
     socket.emit('get-markdown', name);
 
@@ -454,9 +513,8 @@ function loadDoc(name) {
     });
 }
 
-/*
- * Project management
- */
+
+// project management ---------------------------------------------------------
 
 function exportProject() {
     let actorsQnt = actors.length;
