@@ -39,15 +39,15 @@ pages[1] = `
 </div>
 <div class="form" id="media">
     <div id="sprites-field" class="item-field-major">
-        <span>Sprites</span> <button onclick="addSprite()">+</button> <button id="expand-button" onclick="expandSprites()">V</button>
+        <span>Sprites</span> <button onclick="sprites.addItem()">+</button> <button id="expand-button" onclick="sprites.expand()">V</button>
     </div>
     <div id="sprites"></div>
     <div id="songs-field" class="item-field-major">
-        <span>Songs</span> <button onclick="_songs.addItem()">+</button> <button id="expand-button" onclick="expandSongs()">V</button>
+        <span>Songs</span> <button onclick="songs.addItem()">+</button> <button id="expand-button" onclick="songs.expand()">V</button>
     </div>
     <div id="songs"></div>
     <div id="inputs-field" class="item-field-major">
-        <span>Input</span> <button onclick="addInput()">+</button> <button id="expand-button" onclick="expandInputs()">V</button>
+        <span>Inputs</span> <button onclick="inputs.addItem()">+</button> <button id="expand-button" onclick="inputs.expand()">V</button>
     </div>
     <div id="inputs"></div>
 </div>
@@ -183,7 +183,7 @@ function onLateralTabClick(id) {
 
 
 // sprites management ---------------------------------------------------------
-
+/*
 let sprites = new Array();
 
 function newSpriteHTML(sprite, n) {
@@ -265,9 +265,9 @@ function editSprite(n) {
         document.getElementById("edit-media").innerHTML = "";
     }
 
-
+*/
 // songs management -----------------------------------------------------------
-
+/*
 let songs = new Array();
 
 function newSongHTML(song, n) {
@@ -356,34 +356,30 @@ function editSong(n) {
         //document.getElementById("edit-media").innerHTML = "";
         cancelEditing("edit-media", songs);
     }
-
+*/
 class ProjectItemGroup {
     constructor(info) {
         this.array             = new Array();
-        this.groupName         = info.group;
+        this.group             = info.group;
         this.title             = info.title;
         this.fields            = info.fields;
         this.htmlItensField    = info.htmlItensField;
+        this.htmlGroupHeader   = info.htmlGroupHeader;
         this.htmlEditItemField = info.htmlEditItemField;
-        this._defaultItem      = info.defaultItem; 
-    }
-    newItemHTML(item, n) {
-        return newItemForm(
-            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
-            [{onclick: '_songs.edit('+n+')', iconClass: 'icon_edit'}, {onclick: '_songs.erase('+n+')', iconClass: 'icon_erase'}]
-        );
+        this._defaultItem      = info.defaultItem;
+        this.newItemHTML       = info.newItemHTML;
     }
     expand() {
-        fillArea("songs", this.newItemHTML, this.array);
-        document.getElementById("songs-field").innerHTML =
-        '<span>Songs</span> <button onclick="_songs.addItem()">+</button>'+
-        '<button id="hide-button" onclick="_songs.hide()">^</button>'     ;
+        fillArea(this.htmlItensField, this.newItemHTML, this.array);
+        document.getElementById(this.htmlGroupHeader).innerHTML =
+        '<span>'+this.title+'</span> <button onclick="'+this.group+'.addItem()">+</button>'+
+        '<button id="hide-button" onclick="'+this.group+'.hide()">^</button>'              ;
     }
     hide() {
-        document.getElementById("songs").innerHTML = "";
-        document.getElementById("songs-field").innerHTML =
-        '<span>Songs</span> <button onclick="_songs.addItem()">+</button>'+
-        '<button id="expand-button" onclick="_songs.expand()">V</button>' ;
+        document.getElementById(this.htmlItensField).innerHTML = "";
+        document.getElementById(this.htmlGroupHeader).innerHTML =
+        '<span>'+this.title+'</span> <button onclick="'+this.group+'.addItem()">+</button>'+
+        '<button id="expand-button" onclick="'+this.group+'.expand()">V</button>'          ;
     }
     erase(n) {
         this.array.splice(n, 1);
@@ -396,31 +392,79 @@ class ProjectItemGroup {
         this.expand();
     }
     edit(n) {
-        editItem("_songs", "edit-media", this.array, this.fields, n);
+        editItem(this.group, this.htmlEditItemField, this.array, this.fields, n);
     }
     save() {
         saveEditing(this.array, this.fields);
         this.expand();
     }
     cancel() {
-        cancelEditing("edit-media", this.array);
+        cancelEditing(this.htmlEditItemField, this.array);
     }
 };
 
-let _songs = new ProjectItemGroup({
+let sprites = new ProjectItemGroup({
+    group: "sprites", 
+    title: "Sprites", 
+    fields: ["alias", "path"],
+    htmlItensField: "sprites",
+    htmlGroupHeader: "sprites-field",
+    htmlEditItemField: "edit-media",
+    defaultItem: {
+        alias : "to edit",
+        path  : "/tmp/",
+    },
+    newItemHTML: (item, n) => {
+        return newItemForm(
+            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
+            [{onclick: 'sprites.edit('+n+')' , iconClass: 'icon_edit' }, 
+             {onclick: 'sprites.erase('+n+')', iconClass: 'icon_erase'}]
+        );
+    }
+});
+
+let songs = new ProjectItemGroup({
     group: "songs", 
     title: "Songs", 
     fields: ["alias", "path"],
     htmlItensField: "songs",
+    htmlGroupHeader: "songs-field",
     htmlEditItemField: "edit-media",
     defaultItem: {
-        alias   : "to edit",
-        path    : "/tmp/",
+        alias : "to edit",
+        path  : "/tmp/",
     },
+    newItemHTML: (item, n) => {
+        return newItemForm(
+            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
+            [{onclick: 'songs.edit('+n+')' , iconClass: 'icon_edit' }, 
+             {onclick: 'songs.erase('+n+')', iconClass: 'icon_erase'}]
+        );
+    }
+});
+
+let inputs = new ProjectItemGroup({
+    group: "inputs", 
+    title: "Inputs", 
+    fields: ["alias", "key"],
+    htmlItensField: "inputs",
+    htmlGroupHeader: "inputs-field",
+    htmlEditItemField: "edit-media",
+    defaultItem: {
+        alias : "to edit",
+        key   : "space",
+    },
+    newItemHTML: (item, n) => {
+        return newItemForm(
+            [{title: 'Alias', content: item.alias}, {title: 'Key', content: item.key}],
+            [{onclick: 'inputs.edit('+n+')' , iconClass: 'icon_edit' }, 
+             {onclick: 'inputs.erase('+n+')', iconClass: 'icon_erase'}]
+        );
+    }
 });
 
 //inputs management -----------------------------------------------------------
-
+/*
 let inputs = new Array();
 
 function newInputHTML(input, n) {
@@ -501,7 +545,7 @@ function editInput(n) {
         }
         document.getElementById("edit-media").innerHTML = "";
     }
-
+*/
     
 // documentation management ---------------------------------------------------
 
