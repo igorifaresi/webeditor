@@ -187,6 +187,7 @@ class ProjectItemGroup {
         this.group             = info.group;
         this.title             = info.title;
         this.fields            = info.fields;
+        this.fieldsTypes       = info.fieldsTypes;
         this.htmlItensField    = info.htmlItensField;
         this.htmlGroupHeader   = info.htmlGroupHeader;
         this.htmlEditItemField = info.htmlEditItemField;
@@ -216,10 +217,10 @@ class ProjectItemGroup {
         this.expand();
     }
     edit(n) {
-        editItem(this.group, this.htmlEditItemField, this.array, this.fields, n);
+        editItem(this.group, this.htmlEditItemField, this.array, this.fields, this.fieldsTypes, n);
     }
     save() {
-        saveEditing(this.array, this.fields);
+        saveEditing(this.array, this.fields, this.fieldsTypes);
         this.expand();
     }
     cancel() {
@@ -231,6 +232,7 @@ let sprites = new ProjectItemGroup({
     group: "sprites", 
     title: "Sprites", 
     fields: ["alias", "path"],
+    fieldsTypes: ["string", "local-media-reference"],
     htmlItensField: "sprites",
     htmlGroupHeader: "sprites-field",
     htmlEditItemField: "edit-media",
@@ -251,6 +253,7 @@ let songs = new ProjectItemGroup({
     group: "songs", 
     title: "Songs", 
     fields: ["alias", "path"],
+    fieldsTypes: ["string", "local-media-reference"],
     htmlItensField: "songs",
     htmlGroupHeader: "songs-field",
     htmlEditItemField: "edit-media",
@@ -271,6 +274,7 @@ let inputs = new ProjectItemGroup({
     group: "inputs", 
     title: "Inputs", 
     fields: ["alias", "key"],
+    fieldsTypes: ["string", "local-media-reference"],
     htmlItensField: "inputs",
     htmlGroupHeader: "inputs-field",
     htmlEditItemField: "edit-media",

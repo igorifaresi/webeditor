@@ -21,7 +21,7 @@ function fillArea(areaName, fun, array) {
     }
 }
 
-function editItem(groupName, areaName, array, data, n) {
+function editItem(groupName, areaName, array, data, types, n) {
     let len = array.length;
     for (let i = 0; i < len; i++) {
         if (array[i].editing) {
@@ -33,7 +33,11 @@ function editItem(groupName, areaName, array, data, n) {
     doc.innerHTML = '<div id="edit-media-form" style="display: flex; flex-direction: column;">';
     len = data.length;
     for (let i = 0; i < len; i++) {
-        doc.innerHTML += '<label>'+data[i]+':</label> <input id="'+data[i]+'-field" type="text">'
+        if (types[i] == 'string') {
+            doc.innerHTML += '<label>'+data[i]+':</label> <input id="'+data[i]+'-field" type="text">'
+        } else if (types[i] == 'local-media-reference') {
+            doc.innerHTML += '<input type="file" id="'+data[i]+'-field">';
+        }
     }
     doc.innerHTML += `
     </div>
@@ -41,11 +45,13 @@ function editItem(groupName, areaName, array, data, n) {
         <button onclick="`+groupName+`.save()">Save</button> <button onclick="`+groupName+`.cancel()">Cancel</button>
     </div>`;
     for (let i = 0; i < len; i++) {
-        document.getElementById(data[i]+"-field").value = array[n][data[i]];
+        if (types[i] == 'string') {
+            document.getElementById(data[i]+"-field").value = array[n][data[i]];
+        }
     }
 }
 
-function saveEditing(array, data) {
+function saveEditing(array, data, types) {
     let len = array.length;
     for (let i = 0; i < len; i++) {
         if (array[i].editing) {
