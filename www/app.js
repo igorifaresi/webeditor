@@ -1,9 +1,36 @@
-const templateFile = `update = function()
-
+const templateFile = `start = function()
+	print("Starting")
+	mySprite = AssetsTable.healer
 end
 
-main = function()
-    CheckState(Always(), update)
+
+loop = function()
+	delta = Delta.v
+	
+	vel_x = input:force(input.key.d) - input:force(input.key.a)
+	vel_y = input:force(input.key.w) - input:force(input.key.s)
+	vel = 4 * delta
+
+	vel_mag = math.sqrt(vel_x*vel_x + vel_y*vel_y)
+	if vel_mag > 0 then
+		vel_x = vel * vel_x / vel_mag
+		vel_y = vel * vel_y / vel_mag
+	else
+		vel_x = 0
+		vel_y = 0
+	end
+	
+	sprite = mySprite
+	if input:down(input.key.shift) then
+		sprite = sprite + 1
+	end
+	if input:down(input.key.ctrl) then
+		sprite = sprite - 1
+	end
+
+	mySprite = sprite
+
+	Move(vel_x, vel_y)
 end
 `
 
@@ -21,12 +48,9 @@ var actors = new Array();
 let actualEditingActor = 0;
 let actualPage = 0;
 
-addActor("foo");
-addActor("bar");
-addActor("baz");
-addActor("batatinha");
+addActor("batata");
 
-var socket = io('http://localhost:3000/');
+var socket = io('http://localhost:8000/');
 
 
 // main pages -----------------------------------------------------------------
@@ -67,9 +91,8 @@ pages[2] = `
     <p><img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" alt="Alt Text" /></p>
 </div>
 <div class="second-form" id="doc-tree">
-    <div class="item-field"><span>Page 1</span><button onclick="loadDoc('page1.md')"><span class="icon icon_show"></span></button></div>
-    <div class="item-field"><span>Page 2</span><button onclick="loadDoc('page2.md')"><span class="icon icon_show"></span></button></div>
-    <div class="item-field"><span>Page 3</span><button onclick="loadDoc('page3.md')"><span class="icon icon_show"></span></button></div>
+    <div class="item-field"><span>Manual rápido 1</span><button onclick="loadDoc('page1.md')"><span class="icon icon_show"></span></button></div>
+    <div class="item-field"><span>Instruções para o Hackathon</span><button onclick="loadDoc('page2.md')"><span class="icon icon_show"></span></button></div>
 </div>
 `
 
@@ -220,7 +243,7 @@ class ProjectItemGroup {
         editItem(this.group, this.htmlEditItemField, this.array, this.fields, this.fieldsTypes, n);
     }
     save() {
-        saveEditing(this.array, this.fields, this.fieldsTypes);
+        saveEditing(this.array, this.fields, this.fieldsTypes, socket);
         this.expand();
     }
     cancel() {
@@ -231,18 +254,18 @@ class ProjectItemGroup {
 let sprites = new ProjectItemGroup({
     group: "sprites", 
     title: "Sprites", 
-    fields: ["alias", "path"],
-    fieldsTypes: ["string", "local-media-reference"],
+    fields: ["alias", "file"],
+    fieldsTypes: ["string", "local-media-reference-img"],
     htmlItensField: "sprites",
     htmlGroupHeader: "sprites-field",
     htmlEditItemField: "edit-media",
     defaultItem: {
         alias : "to edit",
-        path  : "/tmp/",
+        file  : "/tmp/",
     },
     newItemHTML: (item, n) => {
         return newItemForm(
-            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
+            [{title: 'Alias', content: item.alias}, {title: 'File', content: item.file}],
             [{onclick: 'sprites.edit('+n+')' , iconClass: 'icon_edit' }, 
              {onclick: 'sprites.erase('+n+')', iconClass: 'icon_erase'}]
         );
@@ -252,18 +275,18 @@ let sprites = new ProjectItemGroup({
 let songs = new ProjectItemGroup({
     group: "songs", 
     title: "Songs", 
-    fields: ["alias", "path"],
-    fieldsTypes: ["string", "local-media-reference"],
+    fields: ["alias", "file"],
+    fieldsTypes: ["string", "local-media-reference-song"],
     htmlItensField: "songs",
     htmlGroupHeader: "songs-field",
     htmlEditItemField: "edit-media",
     defaultItem: {
         alias : "to edit",
-        path  : "/tmp/",
+        file  : "/tmp/",
     },
     newItemHTML: (item, n) => {
         return newItemForm(
-            [{title: 'Alias', content: item.alias}, {title: 'Path', content: item.path}],
+            [{title: 'Alias', content: item.alias}, {title: 'File', content: item.file}],
             [{onclick: 'songs.edit('+n+')' , iconClass: 'icon_edit' }, 
              {onclick: 'songs.erase('+n+')', iconClass: 'icon_erase'}]
         );
@@ -274,7 +297,7 @@ let inputs = new ProjectItemGroup({
     group: "inputs", 
     title: "Inputs", 
     fields: ["alias", "key"],
-    fieldsTypes: ["string", "local-media-reference"],
+    fieldsTypes: ["string", "string"],
     htmlItensField: "inputs",
     htmlGroupHeader: "inputs-field",
     htmlEditItemField: "edit-media",
@@ -307,53 +330,14 @@ function loadDoc(name) {
 function exportProject() {
     let actorsQnt = actors.length;
     for (let i = 0; i < actorsQnt; i++) {
-        socket.emit('export', {
-            "dir"      : "/home/ifaresi/luagame/actors",
+        if (actors[i].editing) {
+            actors[i].content = editor.getValue();
+        }
+        socket.emit('store-actor', {
             "fileName" : actors[i].name+".lua",
-            "data"     : actors[i].content,
+            "script"   : actors[i].content,
         });
     }
-
-    let project = "media = { ";
-    let spritesQnt = sprites.length;
-    for (let i = 0; i < spritesQnt; i++) {
-        project += `
-    {
-        type  = "sprite",
-        path  = "`+sprites[i].path+`",
-        alias = "`+sprites[i].alias+`",
-    },
-`;
-    }
-
-    let songsQnt = songs.length;
-    for (let i = 0; i < songsQnt; i++) {
-        project += `
-    {
-        type  = "song",
-        path  = "`+songs[i].path+`",
-        alias = "`+songs[i].alias+`",
-    },
-`;
-    }
-
-    let inputsQnt  = inputs.length;
-    for (let i = 0; i < inputsQnt; i++) {
-        project +=`
-    {
-        type  = "input",
-        value = `+inputs[i].value+`,
-        alias = "`+inputs[i].alias+`",
-    },
-`;
-    }
-    project += "}";
-
-    socket.emit('export', {
-        "dir"      : "/home/ifaresi/luagame/",
-        "fileName" : "project.lua",
-        "data"     :  project,
-    });
 
     alert("The project was exported");
 }

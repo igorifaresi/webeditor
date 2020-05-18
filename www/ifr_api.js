@@ -35,8 +35,10 @@ function editItem(groupName, areaName, array, data, types, n) {
     for (let i = 0; i < len; i++) {
         if (types[i] == 'string') {
             doc.innerHTML += '<label>'+data[i]+':</label> <input id="'+data[i]+'-field" type="text">'
-        } else if (types[i] == 'local-media-reference') {
-            doc.innerHTML += '<input type="file" id="'+data[i]+'-field">';
+        } else if (types[i] == 'local-media-reference-img') {
+            doc.innerHTML += '<input type="file" id="'+data[i]+'-field" accept=".bmp,.png,.jpg" />';
+        } else if (types[i] == 'local-media-reference-song') {
+            doc.innerHTML += '<input type="file" id="'+data[i]+'-field" accept=".mp3,.ogg,.flac,.wav" />';
         }
     }
     doc.innerHTML += `
@@ -51,13 +53,31 @@ function editItem(groupName, areaName, array, data, types, n) {
     }
 }
 
-function saveEditing(array, data, types) {
+function saveEditing(array, data, types, socket) {
     let len = array.length;
     for (let i = 0; i < len; i++) {
         if (array[i].editing) {
             let dataFieldsLen = data.length;
             for (let j = 0; j < dataFieldsLen; j++) {
-                array[i][data[j]] = document.getElementById(data[j]+"-field").value;
+                if (types[j] == 'string') {
+                    array[i][data[j]] = document.getElementById(data[j]+"-field").value;
+                } else if (types[j] == 'local-media-reference-img' 
+                ||         types[j] == 'local-media-reference-song') {
+                    var file = document.getElementById(data[j]+"-field").files[0];
+                    array[i][data[j]] = file.name;
+
+                    var reader = new FileReader();
+                    reader.onload = (function(theFile) {
+                        return function(e) {
+                            //window.open(e.target.result, '_blank')
+                            socket.emit('store-media', {
+                                "fileName" : file.name,
+                                "data"     : e.target.result,
+                            });
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+                }
             }
         }
     }
