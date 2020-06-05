@@ -16,6 +16,9 @@ AssetsTable = {
 
 	gost_tree = 7,
 	geon = 8,
+
+	ball = 9,
+	pad = 10,
 }
 
 Delta = {v = 0}
@@ -86,11 +89,15 @@ input = {
 	end
 }
 
+global = {}
+
 
 LoadActor = function(actorname)
 	local env = {}
 	local chunk, err = loadfile("actors/"..actorname..".lua", 'bt', env)
-	assert(not err)
+	
+	if err then print("error in" .. actorname) end 
+	
 	if not err then
 		chunk()
 	else
@@ -101,9 +108,11 @@ LoadActor = function(actorname)
 	env["print"] = print
 	env["input"] = input
 	env["LoadActor"] = LoadActor
+	env["DrawText"] = DrawText
 	env["AssetsTable"] = AssetsTable
 	env["Delta"] = Delta
 	env["mySprite"] = 1
+	env["global"] = global
 
 	env["myPosition"] = {
 		x = 0,
@@ -150,11 +159,7 @@ UpdateActors = function(delta, input_down, input_up, input_pressed)
 			Render(value)
 		end
 	end
+	-- DrawText(0,0,"yay")
 end
 -- tests
 
--- Batata = LoadActor("batata")
--- print(Batata.life)
--- print(ActorTable["batata"])
-
--- UpdateActors(0.2)

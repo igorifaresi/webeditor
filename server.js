@@ -55,13 +55,36 @@ io.on('connection', (socket) => {
         fs.writeFileSync(__dirname+"/game/assets/"+media.fileName, buffer);
     });
     socket.on('run', () => {
-        exec('cd game; ./game', (err, stdout, stderr) => {
-            if (err) {
-                console.log(err);
-            }
-        });
+        if (process.env.SYSTEM == 'windows') {
+            exec('cd game && game_win.exe', (err, stdout, stderr) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+            exec('cd game; ./game_linux', (err, stdout, stderr) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
+    socket.on('start', () => {
+        let fileNames = fs.readFileSync(__dirname+"/game/actors/.list")
+            .toString()
+            .replace("\r","")
+            .replace(" ","")
+            .split("\n");
+        let fileData = []
+        for (let i = 0; i < fileNames.length; i++) {
+            fileData[i] = fs.readFileSync(__dirname+"/game/actors/"+fileNames[i]+".lua").toString();
+        }
+        socket.emit('start-resp', [fileNames, fileData]);
     });
     socket.on('store-actor', (actorScript) => {
         fs.writeFileSync(__dirname+"/game/actors/"+actorScript.fileName, actorScript.script);
+    });
+    socket.on('store-actor-list', (data) => {
+        fs.writeFileSync(__dirname+"/game/actors/.list", data);
     });
 });

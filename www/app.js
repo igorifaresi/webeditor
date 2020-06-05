@@ -1,36 +1,10 @@
 const templateFile = `start = function()
-	print("Starting")
-	mySprite = AssetsTable.healer
+	
 end
 
 
 loop = function()
-	delta = Delta.v
 	
-	vel_x = input:force(input.key.d) - input:force(input.key.a)
-	vel_y = input:force(input.key.w) - input:force(input.key.s)
-	vel = 4 * delta
-
-	vel_mag = math.sqrt(vel_x*vel_x + vel_y*vel_y)
-	if vel_mag > 0 then
-		vel_x = vel * vel_x / vel_mag
-		vel_y = vel * vel_y / vel_mag
-	else
-		vel_x = 0
-		vel_y = 0
-	end
-	
-	sprite = mySprite
-	if input:down(input.key.shift) then
-		sprite = sprite + 1
-	end
-	if input:down(input.key.ctrl) then
-		sprite = sprite - 1
-	end
-
-	mySprite = sprite
-
-	Move(vel_x, vel_y)
 end
 `
 
@@ -48,10 +22,25 @@ var actors = new Array();
 let actualEditingActor = 0;
 let actualPage = 0;
 
-addActor("batata");
 
 var socket = io('http://localhost:8000/');
 
+socket.emit('start', {});
+socket.on('start-resp', (data) => {
+    let ismain = true;
+    let names = data[0];
+    let scripts = data[1];
+    for (let i = 0; i < scripts.length; i++) {
+        if (ismain) {
+            addActor(names[i], scripts[i], true)
+            ismain = false;
+        } else {
+            addActor(names[i], scripts[i], false)
+        }
+    }
+});
+
+//addActor("batata");
 
 // main pages -----------------------------------------------------------------
 
@@ -99,7 +88,7 @@ pages[2] = `
 
 // actors behaviour -----------------------------------------------------------
 
-function newActorHTML(actor, n) {
+function newActorHTML(actor, n, ismain) {
     let tab = document.createElement("BUTTON");
     tab.setAttribute("onclick", "onEditorTabClick("+n+")");
     tab.innerHTML = actor.name;
@@ -107,7 +96,10 @@ function newActorHTML(actor, n) {
     let button = document.createElement("div");
     button.setAttribute("class", "item-field");
     button.innerHTML = '<span>'+actor.name+'</span><button onclick="editActor('+n+
-    ')"><span class="icon icon_edit"></span></button> <button onclick="eraseActor('+n+')"><span class="icon icon_erase"></span></button>';
+    ')"><span class="icon icon_edit"></span></button>';
+    if (!ismain) {
+        button.innerHTML += '<button onclick="eraseActor('+n+')"><span class="icon icon_erase"></span></button>';
+    }
 
     if (!actor.editing) {
         tab.setAttribute("id", "tab-inactive");
@@ -118,13 +110,25 @@ function newActorHTML(actor, n) {
     return { "tab" : tab.outerHTML, "button" : button.outerHTML };
 }
 
-function addActor(name) {
+function justAddActor() {
+    addActor(document.getElementById('actor-name-field-input').value, null, false);
+    document.getElementById('actor-name-field-input').value = "";
+}
+
+function addActor(name, content, ismain) {
+    let txt = ""
+    if (content == null) {
+        txt = "-- actor: "+name+"\n"+templateFile;
+    } else {
+        txt = content;
+    }
     actors[actors.length] = {
         "name"    : name,
-        "content" : "-- actor: "+name+"\n"+templateFile,
+        "content" : txt,
         "editing" : false,
+        "ismain"  : ismain,
     };
-    let tmp = newActorHTML(actors[actors.length - 1], actors.length - 1);
+    let tmp = newActorHTML(actors[actors.length - 1], actors.length - 1, ismain);
     document.getElementById("editor-tabs").innerHTML += tmp.tab;
     document.getElementById("actors").innerHTML += tmp.button;
     if (actors.length == 1) {
@@ -161,7 +165,7 @@ function eraseActor(id) {
     tabs.innerHTML = "";
     actorsList.innerHTML = "";
     for (let i = 0; i < len; i++) {
-        let tmp = newActorHTML(actors[i], i);
+        let tmp = newActorHTML(actors[i], i, actors[i].ismain);
         tabs.innerHTML += tmp.tab;
         actorsList.innerHTML += tmp.button;
     }
@@ -329,6 +333,7 @@ function loadDoc(name) {
 
 function exportProject() {
     let actorsQnt = actors.length;
+    let buffer = "";
     for (let i = 0; i < actorsQnt; i++) {
         if (actors[i].editing) {
             actors[i].content = editor.getValue();
@@ -337,7 +342,13 @@ function exportProject() {
             "fileName" : actors[i].name+".lua",
             "script"   : actors[i].content,
         });
+        if (i < actorsQnt - 1) {
+            buffer += actors[i].name+"\n";
+        } else {
+            buffer += actors[i].name;
+        }
     }
+    socket.emit('store-actor-list', buffer);
 
-    alert("The project was exported");
+    alert("The project was saved");
 }

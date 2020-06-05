@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>ACE in Action</title>
+<title>Tecno Potato</title>
 <style type="text/css" media="screen">
     #editor { 
         position: absolute;
@@ -23,7 +23,7 @@
     <button onclick="alert('TODO')">Import Game</button>
     <button onclick="exportProject()">Export Game</button>
     <button onclick="alert('TODO')">Load Project</button>
-    <button onclick="alert('TODO')">Save Project</button>
+    <button onclick="exportProject()">Save Project</button>
     <button onclick="exportProject(); socket.emit('run', {})">Play</button>
 <!--<input  id="myInput" type="file" webkitdirectory directory multiple>-->
 </div>
@@ -44,7 +44,7 @@ end
     </div>
     <div id="actors-form" class="second-form">
         <div class="item-field-major" id="actors-form-top">
-            <span>Actors</span> <button onclick="addActor('foo');"><span class="icon icon_add"></span></button>
+            <span>Actors</span>  <input id="actor-name-field-input" type="text"> <button onclick="justAddActor();"><span class="icon icon_add"></span></button>
         </div>
         <div id="actors-list">
             <div id="actors"></div>
