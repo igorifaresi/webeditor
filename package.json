@@ -12,7 +12,7 @@
   "dependencies": {
     "base-64": "^0.1.0",
     "dotenv": "^8.2.0",
-    "electron": "^8.3.0",
+    "electron": "^18.3.7",
     "express": "^4.17.1",
     "jsoncomp": "^1.6.1",
     "mkdirp": "^1.0.3",
